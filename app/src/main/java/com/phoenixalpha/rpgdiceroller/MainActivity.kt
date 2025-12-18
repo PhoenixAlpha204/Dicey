@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +33,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Card
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,11 +55,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import com.phoenixalpha.rpgdiceroller.ui.theme.RPGDiceRollerTheme
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 import kotlinx.coroutines.delay
+import kotlinx.serialization.Serializable
 
 data class DiceOptionsState(
     val numDice: Int = 1,
@@ -69,16 +81,65 @@ data class DiceOptionsCallbacks(
     val nextAdvantage: () -> Unit
 )
 
+@Serializable
+private data object Home : NavKey
+
+@Serializable
+private data object History : NavKey
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val backStack = rememberNavBackStack(Home)
+
             RPGDiceRollerTheme {
-                Scaffold { innerPadding -> DiceRoller(innerPadding) }
+                Scaffold(bottomBar = { NavBar(backStack) }) { innerPadding ->
+                    MainContent(backStack, innerPadding)
+                }
             }
         }
     }
+}
+
+@Composable
+private fun NavBar(backStack: NavBackStack<NavKey>) {
+    fun onClick(item: NavKey) {
+        if (backStack.last() != Home) backStack.removeLastOrNull()
+        if (item != Home) backStack.add(item)
+    }
+
+    NavigationBar {
+        listOf(Home, History).forEach {
+            NavigationBarItem(
+                it == backStack.last(),
+                { onClick(it) },
+                { Text(it.toString()) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainContent(backStack: NavBackStack<NavKey>, innerPadding: PaddingValues) {
+    val animation = ContentTransform(
+        fadeIn(tween(300)),
+        fadeOut(tween(300))
+    )
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        entryProvider = entryProvider {
+            entry<Home> {
+                DiceRoller(innerPadding)
+            }
+            entry<History> { }
+        },
+        transitionSpec = { animation },
+        popTransitionSpec = { animation }
+    )
 }
 
 @Composable
