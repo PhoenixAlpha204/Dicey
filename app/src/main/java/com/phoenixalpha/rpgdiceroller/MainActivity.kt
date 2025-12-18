@@ -6,24 +6,35 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.byValue
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,13 +42,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.text.isDigitsOnly
 import com.phoenixalpha.rpgdiceroller.ui.theme.RPGDiceRollerTheme
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
+import kotlinx.coroutines.delay
 
 data class DiceOptionsState(
     val numDice: Int = 1,
@@ -133,7 +149,7 @@ fun DiceCard(state: DiceOptionsState, size: Int) {
         )
     }
 
-    if (!result.isEmpty()) {
+    if (result.isNotEmpty()) {
         Dialog({ result.clear() }) { DiceRoll(result) }
     }
 }
@@ -224,6 +240,8 @@ fun Advantage(advantage: SecondRoll, next: () -> Unit) {
 
 @Composable
 fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Card {
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ updateNumDice(numDice - 1) }) {
@@ -231,7 +249,7 @@ fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
             }
             Text(
                 numDice.toString(),
-                Modifier.clickable { updateNumDice(1) },
+                Modifier.clickable { showDialog = true },
                 fontSize = 28.sp
             )
             TextButton({ updateNumDice(numDice + 1) }) {
@@ -239,10 +257,23 @@ fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
             }
         }
     }
+
+    if (showDialog) {
+        NumberDialog(
+            rememberTextFieldState("1"),
+            "Number of dice",
+            InputTransformation.byValue { _, proposed ->
+                proposed.filter { it.isDigit() }
+            },
+            updateNumDice
+        ) { showDialog = false }
+    }
 }
 
 @Composable
 fun Modifier(modifier: Int, updateModifier: (Int) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Card {
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton({ updateModifier(modifier - 1) }) {
@@ -250,13 +281,92 @@ fun Modifier(modifier: Int, updateModifier: (Int) -> Unit) {
             }
             Text(
                 if (modifier >= 0) "+$modifier" else modifier.toString(),
-                Modifier.clickable { updateModifier(0) },
+                Modifier.clickable { showDialog = true },
                 fontSize = 28.sp
             )
             TextButton({ updateModifier(modifier + 1) }) {
                 Text("+", fontSize = 28.sp)
             }
         }
+    }
+
+    if (showDialog) {
+        val transformation = InputTransformation.byValue { current, proposed ->
+            when (proposed.length) {
+                0 -> proposed
+
+                1 -> if (proposed.first() == '-' || proposed.isDigitsOnly()) {
+                    proposed
+                } else {
+                    current
+                }
+
+                else -> if (
+                    proposed.drop(1).isDigitsOnly() &&
+                    (proposed.first() == '-' || proposed.first().isDigit())
+                ) {
+                    proposed
+                } else {
+                    current
+                }
+            }
+        }
+
+        NumberDialog(
+            rememberTextFieldState("0"),
+            "Roll modifier",
+            transformation,
+            updateModifier
+        ) { showDialog = false }
+    }
+}
+
+@Composable
+fun NumberDialog(
+    state: TextFieldState,
+    label: String,
+    inputTransformation: InputTransformation,
+    update: (Int) -> Unit,
+    dismiss: () -> Unit
+) {
+    val focusRequester = remember { FocusRequester() }
+
+    Dialog({ dismiss() }) {
+        Card(
+            Modifier
+                .height(150.dp)
+                .width(200.dp)
+        ) {
+            OutlinedTextField(
+                state,
+                Modifier
+                    .padding(16.dp)
+                    .focusRequester(focusRequester),
+                label = { Text(label) },
+                inputTransformation = inputTransformation,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                ),
+                lineLimits = TextFieldLineLimits.SingleLine
+            )
+            Box(
+                Modifier.fillMaxWidth(),
+                Alignment.BottomEnd
+            ) {
+                TextButton({
+                    val text = state.text
+                    update(if (text.isEmpty()) 0 else text.toString().toInt())
+                    dismiss()
+                }) {
+                    Text("Confirm", Modifier.padding(end = 16.dp))
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequester.requestFocus()
     }
 }
 
