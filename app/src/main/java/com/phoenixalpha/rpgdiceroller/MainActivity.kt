@@ -21,6 +21,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.phoenixalpha.rpgdiceroller.ui.screens.DiceRoller
 import com.phoenixalpha.rpgdiceroller.ui.theme.RPGDiceRollerTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,6 +30,7 @@ private data object Home : NavKey
 @Serializable
 private data object History : NavKey
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

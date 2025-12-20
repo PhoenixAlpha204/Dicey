@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.phoenixalpha.rpgdiceroller.DiceViewModel
 import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
@@ -68,12 +71,32 @@ enum class SecondRoll {
     ADVANTAGE,
     DISADVANTAGE;
 
-    fun asLowerCase(): String = name.lowercase()
-    fun next(): SecondRoll = entries[(ordinal + 1) % entries.size]
+    fun asLowerCase() = name.lowercase()
+    fun next() = entries[(ordinal + 1) % entries.size]
 }
 
+fun rollDice(state: DiceOptionsState, size: Int) = if (state.individual) {
+    List(state.numDice) {
+        rollOnce(size, state.modifier, state.advantage)
+    }.sortedDescending()
+} else {
+    listOf(
+        List(state.numDice) {
+            rollOnce(size, state.modifier, state.advantage)
+        }.sum()
+    )
+}
+
+fun rollOnce(size: Int, modifier: Int, advantage: SecondRoll) = when (advantage) {
+    SecondRoll.NEITHER -> rollDie(size)
+    SecondRoll.ADVANTAGE -> max(rollDie(size), rollDie(size))
+    SecondRoll.DISADVANTAGE -> min(rollDie(size), rollDie(size))
+} + modifier
+
+fun rollDie(size: Int) = Random.nextInt(1, size + 1)
+
 @Composable
-fun DiceRoller(innerPadding: PaddingValues) {
+fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewModel()) {
     var state by remember { mutableStateOf(DiceOptionsState()) }
     val callbacks = remember(state) {
         fun newNumDice(state: DiceOptionsState, numDice: Int): DiceOptionsState = state.copy(
@@ -108,15 +131,15 @@ fun DiceRoller(innerPadding: PaddingValues) {
             .padding(innerPadding),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        val dice = viewModel.dice.collectAsState()
+
         LazyVerticalGrid(
             GridCells.Adaptive(96.dp),
             contentPadding = PaddingValues(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(listOf(4, 6, 8, 10, 12, 20, 100)) {
-                DiceCard(state, it)
-            }
+            items(dice.value) { DiceCard(state, it) }
         }
         RollOptions(state, callbacks)
     }
@@ -144,26 +167,6 @@ fun DiceCard(state: DiceOptionsState, size: Int) {
         Dialog({ result.clear() }) { DiceRoll(result) }
     }
 }
-
-fun rollDice(state: DiceOptionsState, size: Int): List<Int> = if (state.individual) {
-    List(state.numDice) {
-        rollOnce(size, state.modifier, state.advantage)
-    }.sortedDescending()
-} else {
-    listOf(
-        List(state.numDice) {
-            rollOnce(size, state.modifier, state.advantage)
-        }.sum()
-    )
-}
-
-fun rollOnce(size: Int, modifier: Int, advantage: SecondRoll): Int = when (advantage) {
-    SecondRoll.NEITHER -> rollDie(size)
-    SecondRoll.ADVANTAGE -> max(rollDie(size), rollDie(size))
-    SecondRoll.DISADVANTAGE -> min(rollDie(size), rollDie(size))
-} + modifier
-
-fun rollDie(size: Int): Int = Random.nextInt(1, size + 1)
 
 @Composable
 fun DiceRoll(result: List<Int>) {
@@ -254,7 +257,7 @@ fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
 
 @Composable
 fun Modifier(modifier: Int, updateModifier: (Int) -> Unit) {
-    fun transformation(): InputTransformation = InputTransformation.byValue { current, proposed ->
+    fun transformation() = InputTransformation.byValue { current, proposed ->
         when (proposed.length) {
             0 -> proposed
 
