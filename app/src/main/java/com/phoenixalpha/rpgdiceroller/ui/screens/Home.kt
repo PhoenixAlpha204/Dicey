@@ -47,6 +47,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.phoenixalpha.rpgdiceroller.DiceViewModel
+import com.phoenixalpha.rpgdiceroller.data.Die
 import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
@@ -140,6 +141,7 @@ fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewM
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(dice.value) { DiceCard(state, it) }
+            item { AddDiceCard() }
         }
         RollOptions(state, callbacks)
     }
@@ -185,6 +187,36 @@ fun DiceRoll(result: List<Int>) {
             fontSize = 56.sp,
             lineHeight = 79.sp
         )
+    }
+}
+
+@Composable
+fun AddDiceCard(viewModel: DiceViewModel = hiltViewModel()) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    Card(
+        Modifier
+            .aspectRatio(1f)
+            .clickable { showDialog = true }
+    ) {
+        Text(
+            "+",
+            Modifier
+                .fillMaxSize()
+                .wrapContentSize(),
+            fontSize = 56.sp
+        )
+    }
+
+    if (showDialog) {
+        NumberDialog(
+            rememberTextFieldState(""),
+            "Number of sides",
+            InputTransformation.byValue { _, proposed ->
+                proposed.filter { it.isDigit() }
+            },
+            { viewModel.addDie(Die(it.coerceAtLeast(2))) }
+        ) { showDialog = false }
     }
 }
 
