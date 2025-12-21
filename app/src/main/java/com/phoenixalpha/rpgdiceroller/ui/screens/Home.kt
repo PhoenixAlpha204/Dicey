@@ -27,6 +27,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -99,7 +100,7 @@ fun rollOnce(size: Int, modifier: Int, advantage: SecondRoll) = when (advantage)
 fun rollDie(size: Int) = Random.nextInt(1, size + 1)
 
 @Composable
-fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewModel()) {
+fun DiceRoller(innerPadding: PaddingValues) {
     var state by remember { mutableStateOf(DiceOptionsState()) }
     val callbacks = remember(state) {
         fun newNumDice(state: DiceOptionsState, numDice: Int): DiceOptionsState = state.copy(
@@ -128,6 +129,16 @@ fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewM
         )
     }
 
+    DiceRollerContent(innerPadding, state, callbacks)
+}
+
+@Composable
+private fun DiceRollerContent(
+    innerPadding: PaddingValues,
+    state: DiceOptionsState,
+    callbacks: DiceOptionsCallbacks,
+    viewModel: DiceViewModel = hiltViewModel()
+) {
     Column(
         Modifier
             .fillMaxSize()
@@ -138,6 +149,7 @@ fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewM
 
         LazyVerticalGrid(
             GridCells.Adaptive(96.dp),
+            Modifier.weight(1f),
             contentPadding = PaddingValues(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -145,6 +157,7 @@ fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewM
             items(dice.value) { DiceCard(state, it) }
             item { AddDiceCard() }
         }
+        HorizontalDivider(Modifier.padding(horizontal = 8.dp), 2.dp)
         RollOptions(state, callbacks)
     }
 }
@@ -264,7 +277,7 @@ fun AddDiceCard(viewModel: DiceViewModel = hiltViewModel()) {
 @Composable
 fun RollOptions(state: DiceOptionsState, callbacks: DiceOptionsCallbacks) {
     Column(
-        Modifier.padding(bottom = 12.dp),
+        Modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
