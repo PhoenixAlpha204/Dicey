@@ -9,17 +9,20 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.phoenixalpha.rpgdiceroller.ui.screens.DiceRoller
+import com.phoenixalpha.rpgdiceroller.ui.screens.Help
 import com.phoenixalpha.rpgdiceroller.ui.theme.RPGDiceRollerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
@@ -29,6 +32,9 @@ private data object Home : NavKey
 
 @Serializable
 private data object History : NavKey
+
+@Serializable
+private data object Help : NavKey
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -55,7 +61,7 @@ private fun NavBar(backStack: NavBackStack<NavKey>) {
     }
 
     NavigationBar {
-        listOf(Home, History).forEach {
+        listOf(Home, History, Help).forEach {
             NavigationBarItem(
                 it == backStack.last(),
                 { onClick(it) },
@@ -79,6 +85,7 @@ private fun MainContent(backStack: NavBackStack<NavKey>, innerPadding: PaddingVa
         entryProvider = entryProvider {
             entry<Home> { DiceRoller() }
             entry<History> { }
+            entry<Help> { Help() }
         },
         transitionSpec = { animation },
         popTransitionSpec = { animation }
