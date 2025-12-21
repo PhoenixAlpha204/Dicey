@@ -100,7 +100,7 @@ fun rollOnce(size: Int, modifier: Int, advantage: SecondRoll) = when (advantage)
 fun rollDie(size: Int) = Random.nextInt(1, size + 1)
 
 @Composable
-fun DiceRoller(innerPadding: PaddingValues) {
+fun DiceRoller() {
     var state by remember { mutableStateOf(DiceOptionsState()) }
     val callbacks = remember(state) {
         fun newNumDice(state: DiceOptionsState, numDice: Int): DiceOptionsState = state.copy(
@@ -129,20 +129,17 @@ fun DiceRoller(innerPadding: PaddingValues) {
         )
     }
 
-    DiceRollerContent(innerPadding, state, callbacks)
+    DiceRollerContent(state, callbacks)
 }
 
 @Composable
 private fun DiceRollerContent(
-    innerPadding: PaddingValues,
     state: DiceOptionsState,
     callbacks: DiceOptionsCallbacks,
     viewModel: DiceViewModel = hiltViewModel()
 ) {
     Column(
-        Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+        Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         val dice = viewModel.dice.collectAsState()
@@ -221,14 +218,14 @@ fun DeleteDie(size: Int, viewModel: DiceViewModel = hiltViewModel(), dismiss: ()
         Text(
             "Delete this die?",
             Modifier
-                .width(250.dp)
-                .padding(vertical = 24.dp)
+                .width(225.dp)
+                .padding(top = 24.dp, bottom = 36.dp)
                 .wrapContentWidth(),
             fontSize = 24.sp
         )
         Row(
             Modifier
-                .width(250.dp)
+                .width(225.dp)
                 .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Bottom

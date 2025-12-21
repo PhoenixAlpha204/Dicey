@@ -73,10 +73,11 @@ private fun MainContent(backStack: NavBackStack<NavKey>, innerPadding: PaddingVa
     )
 
     NavDisplay(
-        backStack = backStack,
+        backStack,
+        Modifier.padding(innerPadding),
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
-            entry<Home> { DiceRoller(innerPadding) }
+            entry<Home> { DiceRoller() }
             entry<History> { }
         },
         transitionSpec = { animation },
