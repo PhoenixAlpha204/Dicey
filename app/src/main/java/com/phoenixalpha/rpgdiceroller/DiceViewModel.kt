@@ -37,7 +37,7 @@ class DiceViewModel @Inject constructor(private val repository: DiceRepository) 
         viewModelScope.launch { repository.addDie(die) }
     }
 
-    fun deleteDie(die: Die) {
-        viewModelScope.launch { repository.deleteDie(die) }
+    fun deleteDie(sides: Int) {
+        viewModelScope.launch { repository.deleteDie(sides) }
     }
 }

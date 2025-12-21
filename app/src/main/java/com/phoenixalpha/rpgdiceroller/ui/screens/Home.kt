@@ -1,6 +1,7 @@
 package com.phoenixalpha.rpgdiceroller.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -150,11 +152,15 @@ fun DiceRoller(innerPadding: PaddingValues, viewModel: DiceViewModel = hiltViewM
 @Composable
 fun DiceCard(state: DiceOptionsState, size: Int) {
     val result = remember { mutableStateListOf<Int>() }
+    var delete by remember { mutableStateOf(false) }
 
     Card(
         Modifier
             .aspectRatio(1f)
-            .clickable { result.addAll(rollDice(state, size)) }
+            .combinedClickable(
+                onClick = { result.addAll(rollDice(state, size)) },
+                onLongClick = { delete = true }
+            )
     ) {
         Text(
             "d$size",
@@ -167,6 +173,12 @@ fun DiceCard(state: DiceOptionsState, size: Int) {
 
     if (result.isNotEmpty()) {
         Dialog({ result.clear() }) { DiceRoll(result) }
+    }
+
+    if (delete) {
+        Dialog({ delete = false }) {
+            DeleteDie(size) { delete = false }
+        }
     }
 }
 
@@ -187,6 +199,35 @@ fun DiceRoll(result: List<Int>) {
             fontSize = 56.sp,
             lineHeight = 79.sp
         )
+    }
+}
+
+@Composable
+fun DeleteDie(size: Int, viewModel: DiceViewModel = hiltViewModel(), dismiss: () -> Unit) {
+    Card {
+        Text(
+            "Delete this die?",
+            Modifier
+                .width(250.dp)
+                .padding(vertical = 24.dp)
+                .wrapContentWidth(),
+            fontSize = 24.sp
+        )
+        Row(
+            Modifier
+                .width(250.dp)
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            TextButton(dismiss) {
+                Text("Cancel", Modifier.padding(end = 8.dp))
+            }
+            TextButton({
+                viewModel.deleteDie(size)
+                dismiss()
+            }) { Text("Confirm", Modifier.padding(end = 16.dp)) }
+        }
     }
 }
 

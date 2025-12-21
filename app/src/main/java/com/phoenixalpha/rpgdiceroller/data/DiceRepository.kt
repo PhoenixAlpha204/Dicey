@@ -22,7 +22,7 @@ class DiceRepository @Inject constructor(private val dao: DiceDao) {
         dice.map { it.sides }
     }
 
-    suspend fun deleteDie(die: Die) {
-        dao.deleteDie(die)
+    suspend fun deleteDie(sides: Int) {
+        dao.deleteDie(Die(sides))
     }
 }
