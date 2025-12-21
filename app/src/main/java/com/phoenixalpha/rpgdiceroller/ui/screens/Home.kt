@@ -81,21 +81,21 @@ enum class SecondRoll {
 
 fun rollDice(state: DiceOptionsState, size: Int) = if (state.individual) {
     List(state.numDice) {
-        rollOnce(size, state.modifier, state.advantage)
+        rollOnce(size, state.advantage) + state.modifier
     }.sortedDescending()
 } else {
     listOf(
         List(state.numDice) {
-            rollOnce(size, state.modifier, state.advantage)
-        }.sum()
+            rollOnce(size, state.advantage)
+        }.sum() + state.modifier
     )
 }
 
-fun rollOnce(size: Int, modifier: Int, advantage: SecondRoll) = when (advantage) {
+fun rollOnce(size: Int, advantage: SecondRoll) = when (advantage) {
     SecondRoll.NEITHER -> rollDie(size)
     SecondRoll.ADVANTAGE -> max(rollDie(size), rollDie(size))
     SecondRoll.DISADVANTAGE -> min(rollDie(size), rollDie(size))
-} + modifier
+}
 
 fun rollDie(size: Int) = Random.nextInt(1, size + 1)
 
