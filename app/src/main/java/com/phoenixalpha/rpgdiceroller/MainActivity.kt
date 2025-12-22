@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,8 +20,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.phoenixalpha.rpgdiceroller.ui.screens.ClearHistoryButton
 import com.phoenixalpha.rpgdiceroller.ui.screens.DiceRoller
 import com.phoenixalpha.rpgdiceroller.ui.screens.Help
+import com.phoenixalpha.rpgdiceroller.ui.screens.History
 import com.phoenixalpha.rpgdiceroller.ui.theme.RPGDiceRollerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
@@ -45,7 +46,10 @@ class MainActivity : ComponentActivity() {
             val backStack = rememberNavBackStack(Home)
 
             RPGDiceRollerTheme {
-                Scaffold(bottomBar = { NavBar(backStack) }) { innerPadding ->
+                Scaffold(
+                    bottomBar = { NavBar(backStack) },
+                    floatingActionButton = { FAB(backStack) }
+                ) { innerPadding ->
                     MainContent(backStack, innerPadding)
                 }
             }
@@ -72,11 +76,13 @@ private fun NavBar(backStack: NavBackStack<NavKey>) {
 }
 
 @Composable
+private fun FAB(backStack: NavBackStack<NavKey>) {
+    if (backStack.last() == History) ClearHistoryButton()
+}
+
+@Composable
 private fun MainContent(backStack: NavBackStack<NavKey>, innerPadding: PaddingValues) {
-    val animation = ContentTransform(
-        fadeIn(tween(300)),
-        fadeOut(tween(300))
-    )
+    val animation = ContentTransform(fadeIn(), fadeOut())
 
     NavDisplay(
         backStack,
@@ -84,7 +90,7 @@ private fun MainContent(backStack: NavBackStack<NavKey>, innerPadding: PaddingVa
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Home> { DiceRoller() }
-            entry<History> { }
+            entry<History> { History() }
             entry<Help> { Help() }
         },
         transitionSpec = { animation },

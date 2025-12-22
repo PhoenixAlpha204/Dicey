@@ -79,16 +79,40 @@ enum class SecondRoll {
     fun next() = entries[(ordinal + 1) % entries.size]
 }
 
-fun rollDice(state: DiceOptionsState, size: Int) = if (state.individual) {
-    List(state.numDice) {
-        rollOnce(size, state.advantage) + state.modifier
-    }.sortedDescending()
-} else {
-    listOf(
-        List(state.numDice) {
-            rollOnce(size, state.advantage)
-        }.sum() + state.modifier
+private fun rollDiceAndStoreHistory(
+    state: DiceOptionsState,
+    size: Int,
+    viewModel: DiceViewModel
+): List<Int> {
+    val (numDice, modifier, individual, advantage) = state
+
+    val (result, diceRolled) = if (individual) {
+        Pair(
+            List(numDice) { rollOnce(size, advantage) + modifier }
+                .sortedDescending(),
+            "${numDice}x 1d$size+$modifier"
+        )
+    } else {
+        Pair(
+            listOf(
+                List(numDice) { rollOnce(size, advantage) }.sum() + modifier
+            ),
+            "${numDice}d$size+$modifier"
+        )
+    }
+
+    viewModel.addResult(
+        Result(
+            diceRolled = diceRolled + if (advantage != SecondRoll.NEITHER) {
+                " w/ ${advantage.asLowerCase()}"
+            } else {
+                ""
+            },
+            result = result.joinToString()
+        )
     )
+
+    return result
 }
 
 fun rollOnce(size: Int, advantage: SecondRoll) = when (advantage) {
@@ -160,15 +184,22 @@ private fun DiceRollerContent(
 }
 
 @Composable
-fun DiceCard(state: DiceOptionsState, size: Int) {
+private fun DiceCard(
+    state: DiceOptionsState,
+    size: Int,
+    viewModel: DiceViewModel = hiltViewModel()
+) {
     val result = remember { mutableStateListOf<Int>() }
     var delete by remember { mutableStateOf(false) }
 
+    fun getRollResult() {
+        result.addAll(rollDiceAndStoreHistory(state, size, viewModel))
+    }
     Card(
         Modifier
             .aspectRatio(1f)
             .combinedClickable(
-                onClick = { result.addAll(rollDice(state, size)) },
+                onClick = { getRollResult() },
                 onLongClick = { delete = true }
             )
     ) {
