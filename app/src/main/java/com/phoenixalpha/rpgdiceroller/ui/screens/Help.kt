@@ -1,6 +1,7 @@
 package com.phoenixalpha.rpgdiceroller.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
@@ -35,11 +36,14 @@ fun Help() {
         )
     )
 
-    LazyColumn(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+    LazyColumn(
+        Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp)
+    ) {
         helpEntries.forEach { (header, content) ->
             stickyHeader { Header(header) }
             item { Content(content) }
         }
+        item { Spacer(Modifier.padding(bottom = 12.dp)) }
     }
 }
 
