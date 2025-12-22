@@ -51,26 +51,27 @@ import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.phoenixalpha.rpgdiceroller.DiceViewModel
 import com.phoenixalpha.rpgdiceroller.data.Die
+import com.phoenixalpha.rpgdiceroller.data.Result
 import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-data class DiceOptionsState(
+private data class DiceOptionsState(
     val numDice: Int = 1,
     val modifier: Int = 0,
     val individual: Boolean = false,
     val advantage: SecondRoll = SecondRoll.NEITHER
 )
 
-data class DiceOptionsCallbacks(
+private data class DiceOptionsCallbacks(
     val setNumDice: (Int) -> Unit,
     val setModifier: (Int) -> Unit,
     val toggleIndividual: () -> Unit,
     val nextAdvantage: () -> Unit
 )
 
-enum class SecondRoll {
+private enum class SecondRoll {
     NEITHER,
     ADVANTAGE,
     DISADVANTAGE;
@@ -115,13 +116,13 @@ private fun rollDiceAndStoreHistory(
     return result
 }
 
-fun rollOnce(size: Int, advantage: SecondRoll) = when (advantage) {
+private fun rollOnce(size: Int, advantage: SecondRoll) = when (advantage) {
     SecondRoll.NEITHER -> rollDie(size)
     SecondRoll.ADVANTAGE -> max(rollDie(size), rollDie(size))
     SecondRoll.DISADVANTAGE -> min(rollDie(size), rollDie(size))
 }
 
-fun rollDie(size: Int) = Random.nextInt(1, size + 1)
+private fun rollDie(size: Int) = Random.nextInt(1, size + 1)
 
 @Composable
 fun DiceRoller() {
@@ -195,6 +196,7 @@ private fun DiceCard(
     fun getRollResult() {
         result.addAll(rollDiceAndStoreHistory(state, size, viewModel))
     }
+
     Card(
         Modifier
             .aspectRatio(1f)
@@ -224,7 +226,7 @@ private fun DiceCard(
 }
 
 @Composable
-fun DiceRoll(result: List<Int>) {
+private fun DiceRoll(result: List<Int>) {
     Card(
         Modifier
             .widthIn(200.dp)
@@ -244,7 +246,7 @@ fun DiceRoll(result: List<Int>) {
 }
 
 @Composable
-fun DeleteDie(size: Int, viewModel: DiceViewModel = hiltViewModel(), dismiss: () -> Unit) {
+private fun DeleteDie(size: Int, viewModel: DiceViewModel = hiltViewModel(), dismiss: () -> Unit) {
     Card {
         Text(
             "Delete this die?",
@@ -273,7 +275,7 @@ fun DeleteDie(size: Int, viewModel: DiceViewModel = hiltViewModel(), dismiss: ()
 }
 
 @Composable
-fun AddDiceCard(viewModel: DiceViewModel = hiltViewModel()) {
+private fun AddDiceCard(viewModel: DiceViewModel = hiltViewModel()) {
     var showDialog by remember { mutableStateOf(false) }
 
     Card(
@@ -303,7 +305,7 @@ fun AddDiceCard(viewModel: DiceViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun RollOptions(state: DiceOptionsState, callbacks: DiceOptionsCallbacks) {
+private fun RollOptions(state: DiceOptionsState, callbacks: DiceOptionsCallbacks) {
     Column(
         Modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -324,7 +326,7 @@ fun RollOptions(state: DiceOptionsState, callbacks: DiceOptionsCallbacks) {
 }
 
 @Composable
-fun Advantage(advantage: SecondRoll, next: () -> Unit) {
+private fun Advantage(advantage: SecondRoll, next: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text("Roll with: ", fontSize = 20.sp)
         Card(Modifier.clickable { next() }) {
@@ -338,7 +340,7 @@ fun Advantage(advantage: SecondRoll, next: () -> Unit) {
 }
 
 @Composable
-fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
+private fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     Card {
@@ -370,7 +372,7 @@ fun DiceNumber(numDice: Int, updateNumDice: (Int) -> Unit) {
 }
 
 @Composable
-fun Modifier(modifier: Int, updateModifier: (Int) -> Unit) {
+private fun Modifier(modifier: Int, updateModifier: (Int) -> Unit) {
     fun transformation() = InputTransformation.byValue { current, proposed ->
         when (proposed.length) {
             0 -> proposed
@@ -421,7 +423,7 @@ fun Modifier(modifier: Int, updateModifier: (Int) -> Unit) {
 }
 
 @Composable
-fun NumberDialog(
+private fun NumberDialog(
     state: TextFieldState,
     label: String,
     inputTransformation: InputTransformation,
@@ -482,7 +484,7 @@ private fun NumberDialogConfirmation(
 }
 
 @Composable
-fun IndividualOrCombined(individual: Boolean, toggleIndividual: () -> Unit) {
+private fun IndividualOrCombined(individual: Boolean, toggleIndividual: () -> Unit) {
     Card(Modifier.clickable { toggleIndividual() }) {
         Text(
             if (individual) {

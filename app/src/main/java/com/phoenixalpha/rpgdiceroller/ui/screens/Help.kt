@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class HelpEntry(val header: String, val content: String)
+private data class HelpEntry(val header: String, val content: String)
 
 @Composable
 fun Help() {
