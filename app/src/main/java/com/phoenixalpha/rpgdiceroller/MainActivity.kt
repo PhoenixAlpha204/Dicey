@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun NavBar(backStack: NavBackStack<NavKey>) {
-    fun onClick(item: NavKey) {
+    fun navigate(item: NavKey) {
         if (backStack.last() != Home) backStack.removeLastOrNull()
         if (item != Home) backStack.add(item)
     }
@@ -68,7 +68,7 @@ private fun NavBar(backStack: NavBackStack<NavKey>) {
         listOf(Home, History, Help).forEach {
             NavigationBarItem(
                 it == backStack.last(),
-                { onClick(it) },
+                { navigate(it) },
                 { Text(it.toString()) }
             )
         }

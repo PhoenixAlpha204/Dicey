@@ -52,7 +52,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.phoenixalpha.rpgdiceroller.DiceViewModel
 import com.phoenixalpha.rpgdiceroller.data.Die
 import com.phoenixalpha.rpgdiceroller.data.Result
-import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -432,6 +431,8 @@ private fun NumberDialog(
 ) {
     val focusRequester = remember { FocusRequester() }
 
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
     Dialog({ dismiss() }) {
         Card(
             Modifier
@@ -441,11 +442,6 @@ private fun NumberDialog(
             NumberDialogText(state, focusRequester, label, inputTransformation)
             NumberDialogConfirmation(state, update, dismiss)
         }
-    }
-
-    LaunchedEffect(Unit) {
-        delay(100)
-        focusRequester.requestFocus()
     }
 }
 
