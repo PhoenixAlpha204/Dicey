@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.ui.screens
+package com.phoenixalpha.dicey.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

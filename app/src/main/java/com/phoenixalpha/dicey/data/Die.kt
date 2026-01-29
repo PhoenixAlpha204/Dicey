@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.data
+package com.phoenixalpha.dicey.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

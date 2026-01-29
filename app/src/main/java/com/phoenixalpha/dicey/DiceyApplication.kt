@@ -1,7 +1,7 @@
-package com.phoenixalpha.rpgdiceroller
+package com.phoenixalpha.dicey
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class RPGDiceRollerApplication : Application()
+class DiceyApplication : Application()

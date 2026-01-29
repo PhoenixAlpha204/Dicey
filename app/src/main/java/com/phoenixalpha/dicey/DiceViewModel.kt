@@ -1,15 +1,15 @@
-package com.phoenixalpha.rpgdiceroller
+package com.phoenixalpha.dicey
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.phoenixalpha.rpgdiceroller.data.DiceRepository
-import com.phoenixalpha.rpgdiceroller.data.Die
-import com.phoenixalpha.rpgdiceroller.data.Result
+import com.phoenixalpha.dicey.data.DiceRepository
+import com.phoenixalpha.dicey.data.Die
+import com.phoenixalpha.dicey.data.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class DiceViewModel @Inject constructor(private val repository: DiceRepository) : ViewModel() {

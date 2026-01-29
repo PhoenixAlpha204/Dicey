@@ -1,9 +1,9 @@
-package com.phoenixalpha.rpgdiceroller.di
+package com.phoenixalpha.dicey.di
 
 import android.content.Context
 import androidx.room.Room
-import com.phoenixalpha.rpgdiceroller.data.DiceDao
-import com.phoenixalpha.rpgdiceroller.data.DiceDatabase
+import com.phoenixalpha.dicey.data.DiceDao
+import com.phoenixalpha.dicey.data.DiceDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

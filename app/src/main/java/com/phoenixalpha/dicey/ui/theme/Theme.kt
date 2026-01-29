@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.ui.theme
+package com.phoenixalpha.dicey.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -33,7 +33,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun RPGDiceRollerTheme(
+fun DiceyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.data
+package com.phoenixalpha.dicey.data
 
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map

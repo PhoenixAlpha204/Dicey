@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller
+package com.phoenixalpha.dicey
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,11 +20,11 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.phoenixalpha.rpgdiceroller.ui.screens.ClearHistoryButton
-import com.phoenixalpha.rpgdiceroller.ui.screens.DiceRoller
-import com.phoenixalpha.rpgdiceroller.ui.screens.Help
-import com.phoenixalpha.rpgdiceroller.ui.screens.History
-import com.phoenixalpha.rpgdiceroller.ui.theme.RPGDiceRollerTheme
+import com.phoenixalpha.dicey.ui.screens.ClearHistoryButton
+import com.phoenixalpha.dicey.ui.screens.DiceRoller
+import com.phoenixalpha.dicey.ui.screens.Help
+import com.phoenixalpha.dicey.ui.screens.History
+import com.phoenixalpha.dicey.ui.theme.DiceyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val backStack = rememberNavBackStack(Home)
 
-            RPGDiceRollerTheme {
+            DiceyTheme {
                 Scaffold(
                     bottomBar = { NavBar(backStack) },
                     floatingActionButton = { FAB(backStack) }

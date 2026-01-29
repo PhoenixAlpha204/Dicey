@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.ui.theme
+package com.phoenixalpha.dicey.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

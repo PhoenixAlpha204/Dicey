@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.data
+package com.phoenixalpha.dicey.data
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller
+package com.phoenixalpha.dicey
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

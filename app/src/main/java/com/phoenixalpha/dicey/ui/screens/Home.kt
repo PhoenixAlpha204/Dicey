@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.ui.screens
+package com.phoenixalpha.dicey.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -49,9 +49,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.phoenixalpha.rpgdiceroller.DiceViewModel
-import com.phoenixalpha.rpgdiceroller.data.Die
-import com.phoenixalpha.rpgdiceroller.data.Result
+import com.phoenixalpha.dicey.DiceViewModel
+import com.phoenixalpha.dicey.data.Die
+import com.phoenixalpha.dicey.data.Result
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random

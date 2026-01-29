@@ -8,13 +8,13 @@ plugins {
 }
 
 android {
-    namespace = "com.phoenixalpha.rpgdiceroller"
+    namespace = "com.phoenixalpha.dicey"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.phoenixalpha.rpgdiceroller"
+        applicationId = "com.phoenixalpha.dicey"
         minSdk = 29
         targetSdk = 36
         versionCode = 1

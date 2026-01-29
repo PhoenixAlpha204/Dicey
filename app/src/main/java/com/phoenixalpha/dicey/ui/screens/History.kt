@@ -1,4 +1,4 @@
-package com.phoenixalpha.rpgdiceroller.ui.screens
+package com.phoenixalpha.dicey.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.phoenixalpha.rpgdiceroller.DiceViewModel
+import com.phoenixalpha.dicey.DiceViewModel
 
 @Composable
 fun History(viewModel: DiceViewModel = hiltViewModel()) {
